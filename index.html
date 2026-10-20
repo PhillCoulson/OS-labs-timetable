@@ -283,12 +283,15 @@ button:focus-visible,select:focus-visible,a:focus-visible{outline-color:var(--ro
 .main{display:flex;flex-direction:column;align-self:stretch}
 .main> *{flex-shrink:0}
 .sidebar{align-self:stretch}
-.github-repository-link{align-self:flex-start;display:inline-flex;align-items:flex-end;gap:8px;min-height:44px;margin-top:auto;padding:12px 0 0;color:var(--muted);font-size:12px;line-height:22px;font-weight:400;text-decoration:none;white-space:nowrap}
-.github-repository-link svg{width:22px;height:22px;stroke-width:1.7}
-.github-repository-link:hover{color:var(--rose)}
-.github-repository-link:hover span{text-decoration:underline;text-underline-offset:4px}
-@media(max-width:760px){.github-repository-link{font-size:11px;margin-top:8px}}
-@media print{.github-repository-link{display:none}}
+.footer-links{align-self:flex-start;display:flex;flex-direction:column;margin-top:auto}
+.footer-link{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:30px;padding:8px 0 0;color:var(--muted);font-size:12px;line-height:22px;font-weight:400;text-decoration:none;white-space:nowrap}
+.footer-link svg{width:16px;height:16px;flex-shrink:0;stroke-width:1.7}
+.footer-link strong{font-weight:700}
+.footer-link:hover{color:var(--rose)}
+.footer-link:hover span{text-decoration:underline;text-underline-offset:4px}
+.footer-link:focus-visible{outline:2px solid var(--rose);outline-offset:3px}
+@media(max-width:760px){.footer-links{margin-top:8px}.footer-link{font-size:11px}}
+@media print{.footer-links{display:none}}
 </style>
 </head>
 <body>
@@ -312,7 +315,10 @@ button:focus-visible,select:focus-visible,a:focus-visible{outline-color:var(--ro
  <section class="calendar-shell" aria-label="实验课日历"><div class="calendar-scroll" id="calendar"></div><div class="calendar-bottom"><span><span class="tiny-dot"></span>每天三个时段 · 同时段课程分别显示</span><span id="calendar-hint">点击课程查看详情</span></div></section>
  <div id="status" class="status-message" role="status" aria-live="polite"></div>
  <footer class="page-footer"><span id="personal-footer">全部 8 班 / 48 次课 · 选择班级后显示粉色星标 · 授课周次 2–14 周</span><span>基准：10 月 8 日＝第 6 周周四 · 离线可用</span></footer>
-<a class="github-repository-link" href="https://github.com/PhillCoulson/os-labs-timetable" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 上查看仓库并 Star（在新标签页打开）" title="打开 GitHub 仓库，为课表点 Star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-7 0C5.27.65 4.09 1 4.09 1A5.07 5.07 0 0 0 4 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 8 18.13V22"/></svg><span lang="en">Star on GitHub</span></a></main>
+<div class="footer-links">
+<a class="github-repository-link footer-link" href="https://github.com/PhillCoulson/os-labs-timetable" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 上查看仓库并 Star（在新标签页打开）" title="打开 GitHub 仓库，为课表点 Star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-7 0C5.27.65 4.09 1 4.09 1A5.07 5.07 0 0 0 4 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 8 18.13V22"/></svg><span lang="en">Star on GitHub</span></a>
+<a class="related-timetable-link footer-link" href="https://phillcoulson.github.io/CompNet-labs-timetable/" target="_blank" rel="noopener noreferrer" aria-label="在这里查看计算机网络实验课表（在新标签页打开）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7m0-7L11 13"/><path d="M10 5H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-4"/></svg><span>在这里查看<strong>计算机网络</strong>实验课表</span></a>
+</div></main>
 </div>
 <dialog class="dialog" id="course-dialog" aria-labelledby="dialog-title"><div class="dialog-top"><h2 id="dialog-title">课程详情</h2><button id="close-dialog" class="icon-button" aria-label="关闭详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><div id="dialog-content"></div></dialog>
 <dialog class="dialog class-picker" id="class-picker" aria-labelledby="picker-title" aria-describedby="picker-description">
