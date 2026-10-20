@@ -327,7 +327,7 @@ button:focus-visible,select:focus-visible,a:focus-visible{outline-color:var(--ro
  <p class="picker-description" id="picker-description">为你的班级加上粉色星标，并显示下一次课与下一次检查。你仍然可以查看全部班级。</p>
  <form id="class-form"><fieldset class="class-options"><legend>我的班级</legend><div class="class-choice-grid" id="class-choices"></div></fieldset>
  <div class="picker-actions"><button class="personal-primary" id="confirm-class" type="submit" disabled>请选择班级</button><button class="personal-secondary" id="find-class" type="button">不确定班级？在课表中寻找</button></div></form>
- <p class="picker-footnote">仅用于当前页面，不需要登录。每次打开或刷新网页都会重新询问；选错后可随时更换。</p>
+ <p class="picker-footnote">选择会保存在当前浏览器，下次打开自动恢复，无需登录；选错后可随时更换。清除网站数据后需重新选择。</p>
 </dialog>
 <script>
 'use strict';
@@ -360,7 +360,21 @@ function fullDate(date){return `${date.getUTCFullYear()} 年 ${shortDate(date)}`
 function chinaToday(){try{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const get=t=>Number(parts.find(p=>p.type===t).value);return new Date(Date.UTC(get('year'),get('month')-1,get('day')))}catch{return REF_DAY}}
 const TODAY=chinaToday();
 const EVENTS=CLASS_DATA.flatMap(cls=>cls.lessons.map(([week,day,slot],i)=>({id:`${cls.id}-${i+1}`,classId:cls.id,name:cls.name,teachers:cls.teachers,room:cls.room,week,day,slot,sequence:i+1,date:addDays(SEMESTER_START,(week-1)*7+day-1)}))).sort((a,b)=>a.date-b.date||a.slot-b.slot||a.classId-b.classId);
-let state={view:'week',cursor:TODAY,selected:new Set(CLASS_DATA.map(c=>c.id)),myClass:null,lookup:false};
+const CLASS_STORAGE_KEY='os-labs-timetable:2026-fall:class';
+let selectionRemembered=false;
+function readSavedClass(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(CLASS_STORAGE_KEY));
+  if(CLASS_DATA.some(item=>item.id===saved)){selectionRemembered=true;return saved}
+ }catch{}
+ return null;
+}
+function rememberClass(id){
+ selectionRemembered=false;
+ try{localStorage.setItem(CLASS_STORAGE_KEY,JSON.stringify(id));selectionRemembered=true}catch{}
+}
+const savedClass=readSavedClass();
+let state={view:'week',cursor:TODAY,selected:new Set(CLASS_DATA.map(c=>c.id)),myClass:savedClass,lookup:false};
 function isPersonal(id){return id===state.myClass}
 function classColor(id){return isPersonal(id)?'var(--rose-light)':`var(--c${id})`}
 function coursesAt(date,slot){return EVENTS.filter(e=>key(e.date)===key(date)&&e.slot===slot&&state.selected.has(e.classId))}
@@ -445,7 +459,7 @@ function renderPersonal(){
  const mine=CLASS_DATA.find(c=>c.id===state.myClass);
  $('lookup-banner').hidden=!state.lookup;
  $('change-class').textContent=mine?'更换我的班级':'选择我的班级';
- $('my-class-note').textContent=mine?`当前：实验${mine.name} · ${mine.teachers}`:'选择后，星标与重点关注将跟随你的班级。';
+ $('my-class-note').textContent=mine?`当前：实验${mine.name} · ${mine.teachers} · ${selectionRemembered?'已在此浏览器记住':'仅本次有效（浏览器未允许保存）'}`:'选择后，星标与重点关注将跟随你的班级。';
  $('focus-panel').setAttribute('aria-label',mine?`${mine.name}重点关注`:'我的班级重点关注');
  $('focus-class-name').textContent=mine?`★ ${mine.name}`:'尚未选择班级';
  $('personal-footer').innerHTML=mine?`<span class="footer-star">★</span> 粉色星标为${mine.name} · 全部 8 班 / 48 次课 · 授课周次 2–14 周`:'全部 8 班 / 48 次课 · 选择班级后显示粉色星标 · 授课周次 2–14 周';
@@ -459,7 +473,7 @@ function renderPersonal(){
 function chooseClass(id){
  if(!CLASS_DATA.some(c=>c.id===id))return;
  const old=state.myClass,onlyMine=old&&state.selected.size===1&&state.selected.has(old);
- state.myClass=id;state.lookup=false;
+ state.myClass=id;state.lookup=false;rememberClass(id);
  if(onlyMine)state.selected=new Set([id]);else state.selected.add(id);
  if($('class-picker').open)$('class-picker').close();
  if($('course-dialog').open)$('course-dialog').close();
@@ -490,7 +504,7 @@ $('class-picker').addEventListener('cancel',event=>{event.preventDefault();start
 $('dialog-content').addEventListener('click',event=>{const button=event.target.closest('[data-confirm-class]');if(button)chooseClass(Number(button.dataset.confirmClass))});
 for(let i=1;i<=14;i++){const option=document.createElement('option');option.value=i;const date=addDays(SEMESTER_START,(i-1)*7);option.textContent=`第 ${i} 周 · ${date.getUTCMonth()+1}/${date.getUTCDate()}`;$('week-jump').append(option)}
 render();
-openClassPicker();
+if(state.myClass===null)openClassPicker();
 </script>
 </body>
 </html>
